@@ -1,0 +1,23 @@
+# Maintainer: SHTMCL contributors
+# Generated from the same commit and deb asset as the desktop release.
+pkgname=shtmcl-bin
+pkgver=@VERSION@
+pkgrel=1
+pkgdesc='Minecraft launcher with isolated instances and community content'
+arch=('x86_64')
+url='https://github.com/@REPOSITORY@'
+license=('MIT')
+depends=('cairo' 'dbus' 'gdk-pixbuf2' 'glib2' 'glibc' 'gtk3' 'hicolor-icon-theme' 'libgcc' 'libsoup3' 'webkit2gtk-4.1')
+provides=("shtmcl=${pkgver}")
+conflicts=('shtmcl')
+options=('!strip' '!debug')
+source=('LICENSE')
+sha256sums=('@LICENSE_SHA256@')
+source_x86_64=("shtmcl-bin-${pkgver}-${CARCH}.deb::${url}/releases/download/v${pkgver}/SHTMCL_${pkgver}_linux_${CARCH}.deb")
+sha256sums_x86_64=('@DEB_SHA256@')
+
+package() {
+  bsdtar -xf "${srcdir}/data.tar.gz" -C "${pkgdir}"
+  ln -s SHTMCL "${pkgdir}/usr/bin/shtmcl"
+  install -Dm644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

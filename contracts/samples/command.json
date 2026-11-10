@@ -1,0 +1,11 @@
+{
+  "requestId": "req-m0-sample",
+  "operationId": "op-m0-sample",
+  "entityId": "instance-m0-sample",
+  "expectedRevision": 7,
+  "payload": {
+    "command": "launch.start",
+    "instanceId": "instance-m0-sample",
+    "multiOpen": false
+  }
+}

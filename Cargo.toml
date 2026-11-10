@@ -1,0 +1,52 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/domain",
+  "crates/platform",
+  "crates/core",
+  "apps/desktop/src-tauri",
+]
+default-members = [
+  "crates/domain",
+  "crates/platform",
+  "crates/core",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.90"
+license = "MIT"
+publish = false
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# Streaming deflate and hashes for payloads. `zip` is deliberately not added;
+# module 04 reads zip structure itself.
+flate2 = "1"
+sha2 = "0.10"
+# Minecraft metadata publishes SHA-1 identities for official artifacts.
+sha1 = "0.10"
+md-5 = "0.10"
+# Parse both legal Retry-After forms without keeping rate-limited workers busy.
+httpdate = "1"
+libc = "0.2"
+# Reused blocking HTTP client for the bounded download worker pool. Defaults are
+# disabled to keep the portable release lean; system roots and proxy support
+# preserve Windows trust/proxy behavior.
+reqwest = { version = "=0.12.24", default-features = false, features = ["blocking", "rustls-tls-native-roots", "system-proxy"] }
+# Shared async runtime for cancellable HTTP response streaming in the bounded
+# download worker pool. Tauri already ships Tokio; pin the workspace API use.
+tokio = { version = "=1.54.0", features = ["macros", "net", "rt-multi-thread", "time"] }
+# OS entropy for invitation secrets and session tokens. Cached locally, resolves
+# offline. Modules must use `shtmcl_platform::entropy`, never a hash of time.
+getrandom = "0.3"
+shtmcl-domain = { path = "crates/domain" }
+shtmcl-platform = { path = "crates/platform" }
+shtmcl-core = { path = "crates/core" }

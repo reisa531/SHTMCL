@@ -1,0 +1,8 @@
+{
+  "code": "task.not_found",
+  "category": "not_found",
+  "retryable": false,
+  "userAction": "reload",
+  "detailRef": "task:task-m0-sample",
+  "operationId": "op-m0-sample"
+}

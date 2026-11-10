@@ -1,0 +1,23 @@
+{
+  "code": "download.interrupted",
+  "codeKnown": true,
+  "category": "network",
+  "title": "下载已中断",
+  "body": "已保留的进度会在网络恢复后继续。",
+  "actions": [
+    {
+      "label": "继续下载",
+      "capability": "download.resume",
+      "role": "primary"
+    },
+    {
+      "label": "查看详情",
+      "capability": "download.open_detail",
+      "role": "secondary",
+      "kind": "detail"
+    }
+  ],
+  "detailRef": "task:task-m0-sample",
+  "evidence": ["resumable_ranges"],
+  "contentVersion": "copy.v1"
+}

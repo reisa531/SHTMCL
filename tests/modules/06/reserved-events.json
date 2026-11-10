@@ -1,0 +1,154 @@
+{
+  "contract": "contracts/domain-v1.md (section 12)",
+  "producer": "06",
+  "note": "Recorded shapes of the events module 06 publishes. The authoritative definition is crates/core/src/rooms/service.rs (membership_payload / connection_payload / room_payload) and it is verified by cargo test -p shtmcl-core --test 06_rooms. This file exists so 10/11/00 can consume the reserved kinds without reading Rust.",
+  "samples": [
+    {
+      "kind": "membership.changed",
+      "when": "join request created, join policy = approve",
+      "payload": {
+        "approvalState": "requested",
+        "membershipId": "membership-1",
+        "roomId": "room-1",
+        "revision": 1,
+        "authorizationGeneration": 1
+      }
+    },
+    {
+      "kind": "membership.changed",
+      "when": "owner approved the request, or join policy = open",
+      "payload": {
+        "approvalState": "approved",
+        "membershipId": "membership-1",
+        "roomId": "room-1",
+        "revision": 2,
+        "authorizationGeneration": 1
+      }
+    },
+    {
+      "kind": "membership.changed",
+      "when": "owner denied the request",
+      "payload": {
+        "approvalState": "denied",
+        "membershipId": "membership-1",
+        "roomId": "room-1",
+        "revision": 2,
+        "authorizationGeneration": 1
+      }
+    },
+    {
+      "kind": "membership.changed",
+      "when": "member cancelled or left; also the core terminal of a lease expiry",
+      "payload": {
+        "approvalState": "left",
+        "membershipId": "membership-1",
+        "roomId": "room-1",
+        "revision": 4,
+        "authorizationGeneration": 2,
+        "evidence": ["membership_left"]
+      }
+    },
+    {
+      "kind": "membership.changed",
+      "when": "owner removed the member",
+      "payload": {
+        "approvalState": "removed",
+        "membershipId": "membership-1",
+        "roomId": "room-1",
+        "revision": 4,
+        "authorizationGeneration": 2,
+        "evidence": ["membership_removed"]
+      }
+    },
+    {
+      "kind": "connection.changed",
+      "when": "connection record created, nothing probed yet",
+      "payload": {
+        "state": "gathering",
+        "connectionId": "connection-1",
+        "roomId": "room-1",
+        "generation": 1,
+        "revision": 1
+      }
+    },
+    {
+      "kind": "connection.changed",
+      "when": "candidate exchange started; transport is still unknown",
+      "payload": {
+        "state": "connecting",
+        "connectionId": "connection-1",
+        "roomId": "room-1",
+        "generation": 1,
+        "revision": 2
+      }
+    },
+    {
+      "kind": "connection.changed",
+      "when": "path established (transport may be direct or relay)",
+      "payload": {
+        "state": "connected",
+        "transport": "direct",
+        "connectionId": "connection-1",
+        "roomId": "room-1",
+        "generation": 1,
+        "revision": 3
+      }
+    },
+    {
+      "kind": "connection.changed",
+      "when": "path established through the relay",
+      "payload": {
+        "state": "connected",
+        "transport": "relay",
+        "connectionId": "connection-1",
+        "roomId": "room-1",
+        "generation": 1,
+        "revision": 3
+      }
+    },
+    {
+      "kind": "connection.changed",
+      "when": "member permission revoked, room ended or the client closed the tunnel",
+      "payload": {
+        "state": "disconnected",
+        "connectionId": "connection-1",
+        "roomId": "room-1",
+        "generation": 1,
+        "revision": 4
+      }
+    },
+    {
+      "kind": "connection.changed",
+      "when": "no direct or relay path inside the budget",
+      "payload": {
+        "state": "failed",
+        "connectionId": "connection-1",
+        "roomId": "room-1",
+        "generation": 1,
+        "revision": 3
+      }
+    },
+    {
+      "kind": "rooms.room.changed",
+      "when": "room created, joins closed/reopened, or ended",
+      "payload": {
+        "roomId": "room-1",
+        "state": "active",
+        "revision": 1,
+        "requirementsRevision": 3,
+        "gamePort": 25565
+      }
+    },
+    {
+      "kind": "rooms.invite.changed",
+      "when": "invite created, rotated, revoked or partially consumed",
+      "payload": {
+        "inviteId": "invite-1",
+        "roomId": "room-1",
+        "remainingUses": 1,
+        "revoked": false,
+        "revision": 2
+      }
+    }
+  ]
+}

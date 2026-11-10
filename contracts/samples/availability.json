@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "availability.v1",
+  "revision": 7,
+  "requiresRecheckAtExecution": true,
+  "actions": [
+    {
+      "label": "继续下载",
+      "capability": "download.resume",
+      "role": "primary",
+      "permission": "download.resume",
+      "basedOnRevision": 7,
+      "state": "available",
+      "available": true
+    },
+    {
+      "label": "启动游戏",
+      "capability": "launch.start",
+      "role": "primary",
+      "permission": "instance.launch",
+      "basedOnRevision": 7,
+      "state": "unavailable",
+      "available": false,
+      "reason": "游戏正在运行，退出后才能写入",
+      "nextStep": "launch.stop_game",
+      "condition": "game_running"
+    }
+  ],
+  "enabled": ["download.resume"]
+}

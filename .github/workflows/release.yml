@@ -1,0 +1,56 @@
+name: Draft desktop release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    uses: ./.github/workflows/package.yml
+
+  draft:
+    name: Create draft after all platforms pass
+    needs: package
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ github.ref_name }}
+      RELEASE_VERSION: ${{ needs.package.outputs.version }}
+    steps:
+      - name: Download packages from this run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          pattern: shtmcl-${{ needs.package.outputs.version }}-*
+          path: release-assets
+          merge-multiple: true
+      - name: Verify downloaded packages
+        working-directory: release-assets
+        run: sha256sum --check SHA256SUMS-*.txt
+      - name: Create or update the draft
+        working-directory: release-assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if existing=$(gh release view "$RELEASE_TAG" --json isDraft 2>/dev/null); then
+            if [[ $(jq -r .isDraft <<< "$existing") != true ]]; then
+              echo 'This release is already published; its assets will not be replaced.' >&2
+              exit 1
+            fi
+            gh release upload "$RELEASE_TAG" ./* --clobber
+          else
+            flags=()
+            if [[ "$RELEASE_VERSION" == *-* ]]; then flags+=(--prerelease); fi
+            gh release create "$RELEASE_TAG" ./* --verify-tag --draft \
+              --title "SHTMCL $RELEASE_VERSION" --generate-notes "${flags[@]}"
+          fi

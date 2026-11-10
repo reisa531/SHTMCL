@@ -1,0 +1,16 @@
+{
+  "id": "task-m0-sample",
+  "operationId": "op-m0-sample",
+  "instanceId": "instance-m0-sample",
+  "inputRevision": 7,
+  "attemptGeneration": 1,
+  "state": "running",
+  "phase": "download",
+  "progress": {
+    "current": 512,
+    "total": 1024,
+    "unit": "bytes"
+  },
+  "cancelRequested": false,
+  "evidence": ["resumable_ranges"]
+}

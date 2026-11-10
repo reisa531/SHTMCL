@@ -1,0 +1,15 @@
+{
+  "eventId": "event-m0-sample",
+  "schemaVersion": 1,
+  "operationId": "op-m0-sample",
+  "entityId": "instance-m0-sample",
+  "revision": 7,
+  "sequence": 12,
+  "attemptGeneration": 1,
+  "kind": "task.progress",
+  "payload": {
+    "taskId": "task-m0-sample",
+    "current": 512,
+    "total": 1024
+  }
+}

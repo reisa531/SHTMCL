@@ -1,0 +1,148 @@
+{
+  "schema": "diagnostics-redaction-cases.v2",
+  "owner": "08",
+  "purpose": "Regression sample for diagnostics export redaction. Consumed by crates/core/tests/08_diagnostics.rs and tests/modules/08/redaction.test.mjs. Every separator form a credential really appears in must have a case.",
+  "categories": {
+    "authorization": "授权头（冒号形态，抹到行尾）",
+    "token": "令牌字段（Key: value / Key=value）",
+    "flag": "命令行 flag 形态（--key value / --key=value）",
+    "callback": "回调参数（?code= / &state=）",
+    "credential": "账户凭据字段",
+    "shape": "形态兜底（eyJ 开头的 JWT；摘要默认保留，除非请求 redactDigests）"
+  },
+  "cases": [
+    {
+      "id": "authorization-bearer",
+      "category": "authorization",
+      "line": "[12:00:00] [Render thread/INFO] Authorization: Bearer abc123def456ghi789",
+      "mustNotContain": ["abc123def456ghi789"],
+      "mustContain": ["Authorization: <redacted>"]
+    },
+    {
+      "id": "authorization-basic",
+      "category": "authorization",
+      "line": "[12:00:00] [main/DEBUG] authorization: Basic dXNlcjpwYXNzd29yZA==",
+      "mustNotContain": ["dXNlcjpwYXNzd29yZA=="],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "cookie-header",
+      "category": "authorization",
+      "line": "[12:00:00] [main/DEBUG] Set-Cookie: sessionid=abc123; Path=/; HttpOnly",
+      "mustNotContain": ["abc123"],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "token-in-query",
+      "category": "token",
+      "line": "GET https://api.example.invalid/session?accessToken=eyJhbGciOiJIUzI1NiJ9.payload.sig HTTP/1.1",
+      "mustNotContain": ["eyJhbGciOiJIUzI1NiJ9"],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "token-in-json",
+      "category": "token",
+      "line": "{\"refresh_token\":\"rt-9f8e7d6c\",\"username\":\"Steve\"}",
+      "mustNotContain": ["rt-9f8e7d6c"],
+      "mustContain": ["Steve"]
+    },
+    {
+      "id": "token-default-separator",
+      "category": "token",
+      "line": "[12:00:00] [main/DEBUG] refresh_token: rt-1122334455",
+      "mustNotContain": ["rt-1122334455"],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "flag-space-form",
+      "category": "flag",
+      "line": "ARGS: -cp libs/a.jar net.minecraft.client.main.Main --accessToken eyJhbGciOi-argv-token",
+      "mustNotContain": ["eyJhbGciOi-argv-token"],
+      "mustContain": ["--accessToken <redacted>"]
+    },
+    {
+      "id": "flag-equals-form",
+      "category": "flag",
+      "line": "ARGS: --access-token=eyJhbGciOi-equals-token --username Steve",
+      "mustNotContain": ["eyJhbGciOi-equals-token"],
+      "mustContain": ["Steve"]
+    },
+    {
+      "id": "flag-snake-form",
+      "category": "flag",
+      "line": "ARGS: --access_token eyJhbGciOi-snake-token --password hunter2",
+      "mustNotContain": ["eyJhbGciOi-snake-token", "hunter2"],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "flag-ctype-form",
+      "category": "flag",
+      "line": "JVM: -DaccessToken=eyJhbGciOi-ctype-token -Dfile.encoding=UTF-8",
+      "mustNotContain": ["eyJhbGciOi-ctype-token"],
+      "mustContain": ["UTF-8"]
+    },
+    {
+      "id": "flag-client-secret",
+      "category": "flag",
+      "line": "ARGS: --clientSecret s3cr3t-client-value",
+      "mustNotContain": ["s3cr3t-client-value"],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "callback-code-and-state",
+      "category": "callback",
+      "line": "callback received: /auth/callback?code=4/0AbCdEf&state=9xz",
+      "mustNotContain": ["0AbCdEf", "9xz"],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "account-credentials",
+      "category": "credential",
+      "line": "[12:00:00] [main/INFO] account password=hunter2 client_secret=cs_live_123",
+      "mustNotContain": ["hunter2", "cs_live_123"],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "kept-sha1-digest",
+      "category": "kept",
+      "line": "[12:00:00] [main/INFO] jar mods/sodium-0.5.8.jar sha1=0a1b2c3d4e5f60718293a4b5c6d7e8f901234567",
+      "mustNotContain": [],
+      "mustContain": ["sodium-0.5.8.jar", "0a1b2c3d4e5f60718293a4b5c6d7e8f901234567"]
+    },
+    {
+      "id": "shape-jwt-without-key",
+      "category": "shape",
+      "line": "[12:00:00] [main/DEBUG] raw eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.signature",
+      "mustNotContain": ["eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.signature"],
+      "mustContain": ["<redacted>"]
+    },
+    {
+      "id": "kept-mod-name-and-version",
+      "category": "kept",
+      "line": "[12:00:00] [main/INFO] mod=sodium version=1.20.4 username=Steve",
+      "mustNotContain": [],
+      "mustContain": ["sodium", "1.20.4", "Steve"]
+    },
+    {
+      "id": "kept-plain-words",
+      "category": "kept",
+      "line": "[12:00:00] [main/INFO] steam code 200 state ready",
+      "mustNotContain": [],
+      "mustContain": ["state ready"]
+    },
+    {
+      "id": "kept-scheme-prose",
+      "category": "kept",
+      "line": "[12:00:00] [main/INFO] Basic settings loaded, Bearer tokens cached",
+      "mustNotContain": [],
+      "mustContain": ["Basic settings loaded"]
+    },
+    {
+      "id": "kept-file-name-with-secret-word",
+      "category": "kept",
+      "line": "[12:00:00] [main/INFO] loaded secrets.txt and secret_settings.json",
+      "mustNotContain": [],
+      "mustContain": ["secrets.txt"]
+    }
+  ]
+}

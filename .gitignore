@@ -1,0 +1,28 @@
+# Rust
+/target
+**/*.rs.bk
+**/target/
+
+# Node / Vite
+node_modules/
+**/node_modules/
+apps/desktop/dist/
+/release-assets/
+/aur-input/
+.vite/
+*.tsbuildinfo
+
+# Tauri generated
+apps/desktop/src-tauri/gen/
+
+# Local environment
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Local evidence / probes
+work/dsh-runs/acl-recovery/
+work/dsh-runs/*.log
+**/.write-probe

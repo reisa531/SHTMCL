@@ -1,0 +1,22 @@
+{
+  "name": "shtmcl",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "pnpm@12.15.0",
+  "description": "SHTMCL desktop launcher engineering workspace (M0 skeleton)",
+  "scripts": {
+    "dev": "pnpm --filter @shtmcl/desktop dev",
+    "build": "pnpm --filter @shtmcl/desktop build",
+    "typecheck": "pnpm --filter @shtmcl/desktop typecheck",
+    "check:contracts": "node scripts/check-contract.mjs",
+    "check:icons": "node scripts/gen-icons.mjs --check",
+    "icons": "node scripts/gen-icons.mjs",
+    "verify": "node scripts/verify.mjs",
+    "tauri:dev": "pnpm --filter @shtmcl/desktop exec tauri dev",
+    "tauri:build": "pnpm --filter @shtmcl/desktop exec tauri build"
+  },
+  "workspaces": [
+    "apps/*"
+  ]
+}

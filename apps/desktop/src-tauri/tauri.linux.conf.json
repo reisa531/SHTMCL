@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "active": true,
+    "targets": ["appimage", "deb"],
+    "category": "Game",
+    "shortDescription": "Minecraft launcher",
+    "longDescription": "Manage Minecraft instances, game downloads and community content."
+  }
+}
