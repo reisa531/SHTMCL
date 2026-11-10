@@ -50,16 +50,16 @@ test("AUR generation pins the deb and license and delegates SRCINFO to makepkg",
 test("AUR generation rejects a changed deb before any recipe is generated", async t => {
   const root = await fixture(t);
   await put(root, "aur-input/SHTMCL_0.1.0_linux_x86_64.deb", "changed bytes");
-  await assert.rejects(() => generateAur({ root, repository: "example/shtmcl" }), /checksum/);
+  await assert.rejects(() => generateAur({ root, repository: "example/shtmcl", ref: "" }), /checksum/);
   await assert.rejects(() => readFile(resolve(root, "target/aur/shtmcl-bin/PKGBUILD")), { code: "ENOENT" });
 });
 
 test("AUR repository and stable-version rules fail before invoking the shell", async t => {
   const root = await fixture(t, "0.1.0-beta.1");
   for (const repository of ["", "../repo", "example/repo;echo-injected", "https://github.com/example/shtmcl"]) {
-    await assert.rejects(() => generateAur({ root, repository }), /GITHUB_REPOSITORY/);
+    await assert.rejects(() => generateAur({ root, repository, ref: "" }), /GITHUB_REPOSITORY/);
   }
-  await assert.rejects(() => generateAur({ root, repository: "example/shtmcl" }), /stable/);
+  await assert.rejects(() => generateAur({ root, repository: "example/shtmcl", ref: "" }), /stable/);
 });
 
 test("AUR generator cannot silently reuse a package with the wrong version or license", async t => {
@@ -67,10 +67,10 @@ test("AUR generator cannot silently reuse a package with the wrong version or li
   const path = resolve(root, "aur-input/build-linux-x86_64.json");
   const original = JSON.parse(await readFile(path, "utf8"));
   await writeFile(path, JSON.stringify({ ...original, version: "9.9.9" }));
-  await assert.rejects(() => generateAur({ root, repository: "example/shtmcl" }), /matching Linux/);
+  await assert.rejects(() => generateAur({ root, repository: "example/shtmcl", ref: "" }), /matching Linux/);
   await writeFile(path, JSON.stringify(original));
   await put(root, "package.json", JSON.stringify({ version: "0.1.0", license: "other" }));
-  await assert.rejects(() => generateAur({ root, repository: "example/shtmcl" }), /license/);
+  await assert.rejects(() => generateAur({ root, repository: "example/shtmcl", ref: "" }), /license/);
 });
 
 test("AUR source archive explicitly includes only PKGBUILD, SRCINFO and LICENSE", async t => {
