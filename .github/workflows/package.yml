@@ -135,7 +135,12 @@ jobs:
       - name: Install locked frontend dependencies
         run: pnpm install --frozen-lockfile
       - name: Test native core and desktop backend
-        run: cargo test --locked --workspace --lib
+        run: |
+          # macOS /var is a system symlink; use its physical temporary path.
+          if [[ "$RUNNER_OS" == macOS ]]; then
+            export TMPDIR="$(cd "$TMPDIR" && pwd -P)"
+          fi
+          cargo test --locked --workspace --lib
       - name: Fetch Windows dependencies for the offline portable builder
         if: matrix.platform == 'windows'
         run: cargo fetch --locked --target x86_64-pc-windows-msvc

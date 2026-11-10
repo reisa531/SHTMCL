@@ -1644,7 +1644,7 @@ mod tests {
 
     #[test]
     fn selection_reports_structured_mismatch_reasons() {
-        let runtimes = vec![runtime(1, "C:/jdk8/bin/java.exe", 8, Arch::X64)];
+        let runtimes = vec![runtime(1, "C:/jdk8/bin/java.exe", 8, Arch::current())];
         let constraint = RuntimeConstraint::host(JavaRequirement::AtLeast(21));
         let selection = select(&runtimes, &constraint, true);
         assert!(selection.selected.is_none());
@@ -1656,7 +1656,12 @@ mod tests {
         assert_eq!(envelope.code.as_str(), errors::codes::JAVA_VERSION_MISMATCH);
         assert!(!envelope.retryable);
 
-        let wrong_arch = vec![runtime(1, "C:/jdk21-arm64/bin/java.exe", 21, Arch::Arm64)];
+        let other_arch = if Arch::current() == Arch::Arm64 {
+            Arch::X64
+        } else {
+            Arch::Arm64
+        };
+        let wrong_arch = vec![runtime(1, "C:/jdk21-other/bin/java.exe", 21, other_arch)];
         let constraint = RuntimeConstraint::host(JavaRequirement::AtLeast(17));
         let selection = select(&wrong_arch, &constraint, true);
         assert_eq!(
@@ -1668,8 +1673,8 @@ mod tests {
     #[test]
     fn explicit_pin_is_reported_instead_of_replaced() {
         let runtimes = vec![
-            runtime(1, "C:/pinned/jdk8/bin/java.exe", 8, Arch::X64),
-            runtime(2, "C:/other/jdk21/bin/java.exe", 21, Arch::X64),
+            runtime(1, "C:/pinned/jdk8/bin/java.exe", 8, Arch::current()),
+            runtime(2, "C:/other/jdk21/bin/java.exe", 21, Arch::current()),
         ];
         let constraint = RuntimeConstraint::host(JavaRequirement::AtLeast(17))
             .with_explicit_path(PathBuf::from("C:/pinned/jdk8/bin/java.exe"));
@@ -1684,9 +1689,9 @@ mod tests {
     #[test]
     fn selection_prefers_the_exact_requirement() {
         let runtimes = vec![
-            runtime(1, "C:/jdk17/bin/java.exe", 17, Arch::X64),
-            runtime(2, "C:/jdk21/bin/java.exe", 21, Arch::X64),
-            runtime(3, "C:/jdk8/bin/java.exe", 8, Arch::X64),
+            runtime(1, "C:/jdk17/bin/java.exe", 17, Arch::current()),
+            runtime(2, "C:/jdk21/bin/java.exe", 21, Arch::current()),
+            runtime(3, "C:/jdk8/bin/java.exe", 8, Arch::current()),
         ];
         let constraint = RuntimeConstraint::host(JavaRequirement::AtLeast(17));
         let selection = select(&runtimes, &constraint, true);

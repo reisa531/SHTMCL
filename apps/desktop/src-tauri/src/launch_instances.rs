@@ -663,7 +663,7 @@ mod tests {
     }
 
     fn setup_real_metadata(temp: &Temp) -> (PlatformDirs, Value) {
-        let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../work/validation/luna/L07/game-install-20261021-01/portable/instances/release-vanilla");
+        let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../tests/fixtures/launch-metadata");
         let dirs = PlatformDirs::under(&temp.0);
         let root = dirs.instances.join("school");
         std::fs::create_dir_all(root.join("versions/1.7.10")).unwrap();
@@ -790,7 +790,7 @@ mod tests {
     #[test]
     fn retained_real_modern_metadata_filters_platform_and_feature_arguments() {
         let source = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../../work/validation/luna/L04/20261021-l04-final-02/detail-1.20.4.json");
+            .join("../../../tests/fixtures/launch-metadata/version-1.20.4.json");
         let bytes = std::fs::read(source).expect("retained real 1.20.4 official metadata");
         let metadata = VersionMetadata::parse(&bytes, Some("1.20.4")).unwrap();
         let args = metadata.arguments.as_ref().unwrap();

@@ -402,12 +402,13 @@ fn cancelled_cache_download_retries_with_verified_objects_and_retains_history() 
     let history = crate::operation_history::OperationHistory::new(ctx.dirs());
     let deadline = Instant::now() + Duration::from_secs(5);
     loop {
-        let old = history
-            .lookup("cache-cancel-first", first.as_str())
-            .unwrap();
-        let new = history
-            .lookup("cache-retry-second", second.as_str())
-            .unwrap();
+        let read = |operation: &str, task: &str| match history.lookup(operation, task) {
+            Ok(snapshot) => snapshot,
+            Err(error) if error == "history_busy" => None,
+            Err(error) => panic!("durable history lookup: {error}"),
+        };
+        let old = read("cache-cancel-first", first.as_str());
+        let new = read("cache-retry-second", second.as_str());
         if old
             .as_ref()
             .is_some_and(|s| s.state == TaskState::Cancelled)
